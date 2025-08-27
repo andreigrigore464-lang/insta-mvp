@@ -1,22 +1,34 @@
-export async function POST(req: Request) {
-  const body = await req.json();
-  const { url } = body as { url: string };
+import { NextResponse } from "next/server";
 
-  // Dummy logic
-  const dummyTitle = "Breaking News: Example Title from " + url;
-  const dummyCaption = `Check out this update: ${dummyTitle}\nRead more at ${url}`;
-  const dummyHashtags = "#news #update #breaking #instanews";
-  const dummyImage = "https://placehold.co/600x600?text=News+Post";
+type GenerateRequest = {
+  url: string;
+};
 
-  return new Response(
-    JSON.stringify({
-      caption: dummyCaption,
-      hashtags: dummyHashtags,
-      image: dummyImage,
-    }),
-    {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    }
-  );
+type GenerateResponse = {
+  caption: string;
+  hashtags: string;
+  image: string;
+};
+
+export async function POST(req: Request): Promise<NextResponse<GenerateResponse>> {
+  try {
+    const body = (await req.json()) as GenerateRequest;
+    const { url } = body;
+
+    // For now, return mock data. Later you'll replace this
+    // with your real "link → Instagram post" logic.
+    const response: GenerateResponse = {
+      caption: `Here’s a quick summary for: ${url}`,
+      hashtags: "#news #automation #insta",
+      image: "https://via.placeholder.com/600x600.png?text=Generated+Post",
+    };
+
+    return NextResponse.json(response);
+  } catch (err) {
+    console.error("Error in /api/generate:", err);
+    return NextResponse.json(
+      { caption: "", hashtags: "", image: "" },
+      { status: 400 }
+    );
+  }
 }
